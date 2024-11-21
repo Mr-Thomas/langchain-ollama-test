@@ -72,6 +72,9 @@ def exec_load(loaders: list) -> list:
 
 
 def slice_text(texts: list):
+    """
+    按照 句号（。）、问号（？）、感叹号（！）和省略号（……） 对文本 text 进行分割。
+    """
     text_list = []
     for text in texts:
         sentences = re.split(r"(。|？|！|\...\...)", text)
@@ -79,6 +82,23 @@ def slice_text(texts: list):
                   zip(sentences[::2], sentences[1::2])]
         text_list.extend(chunks)
     return text_list
+
+
+def slice_text_by_sentences(text: str, max_length: int = 500) -> list:
+    """
+    按句子分片，确保每片不超过 max_length 字符
+    """
+    sentences = text.split("。")
+    slices, current_slice = [], ""
+    for sentence in sentences:
+        if len(current_slice) + len(sentence) <= max_length:
+            current_slice += sentence + "。"
+        else:
+            slices.append(current_slice.strip())
+            current_slice = sentence + "。"
+    if current_slice:
+        slices.append(current_slice.strip())
+    return slices
 
 
 def slice_docs(texts):
